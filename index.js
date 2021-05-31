@@ -21,6 +21,8 @@ const connectWithRetry = () => {
 connectWithRetry()
 
 const app = express()
+app.use(express.json())
+const postRouter = require('./routes/postRoutes')
 
 const port = process.env.PORT || 3000
 
@@ -29,5 +31,7 @@ app.get('/', (req, res) => {
     "<h1>Hi there!</h1>"
   )
 })
+
+app.use("/api/v1/posts", postRouter)
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
