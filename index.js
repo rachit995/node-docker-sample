@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_PORT, REDIS_HOST, REDIS_PORT, SESSION_PASSWORD } = require('./config/config')
 const redis = require('redis')
 const session = require('express-session')
+const cors = require('cors')
 
 // MongoDB initialize
 const mongoURI = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`
@@ -27,6 +28,9 @@ const app = express()
 
 // Express trust proxy
 app.enable('trust proxy')
+
+// Adding CORS
+app.use(cors())
 
 // Express session and redis initialize
 let RedisStore = require('connect-redis')(session)
