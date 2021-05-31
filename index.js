@@ -9,7 +9,8 @@ const connectWithRetry = () => {
     .connect(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: false
+      useFindAndModify: false,
+      useCreateIndex: true
     })
     .then(() => console.log("Successfully connected to DB"))
     .catch((err) => {
@@ -23,6 +24,7 @@ connectWithRetry()
 const app = express()
 app.use(express.json())
 const postRouter = require('./routes/postRoutes')
+const userRouter = require('./routes/userRoutes')
 
 const port = process.env.PORT || 3000
 
@@ -33,5 +35,6 @@ app.get('/', (req, res) => {
 })
 
 app.use("/api/v1/posts", postRouter)
+app.use("/api/v1/users", userRouter)
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
