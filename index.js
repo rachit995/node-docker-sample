@@ -25,6 +25,9 @@ connectWithRetry()
 // Express app initialize
 const app = express()
 
+// Express trust proxy
+app.enable('trust proxy')
+
 // Express session and redis initialize
 let RedisStore = require('connect-redis')(session)
 let redisClient = redis.createClient({
@@ -54,6 +57,7 @@ app.get('/', (req, res) => {
   res.send(
     "<h1>Hi there!</h1>"
   )
+  console.log("it ran")
 })
 
 // Adding routes to app
