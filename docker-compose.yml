@@ -17,5 +17,8 @@ services:
     volumes:
       - mongo-db:/data/db
     hostname: mongodb
+  redis:
+    image: redis
+
 volumes:
   mongo-db:

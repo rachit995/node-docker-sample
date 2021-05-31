@@ -1,9 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_PORT } = require('./config/config')
+const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_PORT, REDIS_HOST, REDIS_PORT, SESSION_PASSWORD } = require('./config/config')
+const redis = require('redis')
+const session = require('express-session')
 
+// MongoDB initialize
 const mongoURI = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`
-
 const connectWithRetry = () => {
   mongoose
     .connect(mongoURI, {
@@ -18,13 +20,33 @@ const connectWithRetry = () => {
       setTimeout(connectWithRetry, 5000)
     })
 }
-
 connectWithRetry()
 
+// Express app initialize
 const app = express()
+
+// Express session and redis initialize
+let RedisStore = require('connect-redis')(session)
+let redisClient = redis.createClient({
+  host: REDIS_HOST,
+  port: REDIS_PORT
+})
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    saveUninitialized: false,
+    secret: SESSION_PASSWORD,
+    resave: false,
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      maxAge: 30000
+    }
+  })
+)
+
+// Parsing body json
 app.use(express.json())
-const postRouter = require('./routes/postRoutes')
-const userRouter = require('./routes/userRoutes')
 
 const port = process.env.PORT || 3000
 
@@ -33,6 +55,10 @@ app.get('/', (req, res) => {
     "<h1>Hi there!</h1>"
   )
 })
+
+// Adding routes to app
+const postRouter = require('./routes/postRoutes')
+const userRouter = require('./routes/userRoutes')
 
 app.use("/api/v1/posts", postRouter)
 app.use("/api/v1/users", userRouter)
